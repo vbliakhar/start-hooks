@@ -1,40 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
-//Якщо ми хочем зберехти щось між рендерами ми використовуєм хук useRef // при цьому він не  викликає сам рендер
-//Також часто використовують при фокусі апо посиланні на певний елемент дом дерева
-//Ми хояем отримувати значення попереднього Стейта
+import React, { useState, useMemo, useEffect } from "react";
+
+function complexCompute(num) {
+  console.log("complexCompute");
+  let i = 0;
+  while (i < 2000000000) i++;
+  console.log(i);
+  return num * 2;
+}
 function App() {
-  // const [renderCount, setrenderCount] = useState(1);
-  const [value, setValue] = useState("text");
-  const renderCount = useRef(1); // useRef - це обєкт .. тому коли  щось  міняєм то нееобхідно звертатись до current
-  const inputRef = useRef(null);
-  const prevValue = useRef("");
+  const [number, setNumber] = useState(42);
+  const [colored, setColored] = useState(false);
+
+  const styles = useMemo(() => {
+    return {
+      color: colored ? "red" : "blue",
+    };
+  }, [colored]);
+
+  const computed = useMemo(() => {
+    return complexCompute(number);
+  }, [number]);
+
   useEffect(() => {
-    renderCount.current++; // приклад  змін і звернення до current
-    console.log(inputRef.current.value);
-  });
-  useEffect(() => {
-    prevValue.current = value;
-  }, [value]);
-  const focus = () => {
-    inputRef.current.focus();
-  };
+    console.log("useEffect");
+  }, [styles]);
   return (
-    <div>
-      <h1>
-        My Count <span style={{ color: "red" }}>{renderCount.current}</span>
+    <>
+      <h1 style={styles}>
+        Calculated value {number} {computed}
       </h1>
-      <h1>Previous conditiona {prevValue.current}</h1>
-      <input
-        ref={inputRef}
-        type="text"
-        onChange={(e) => setValue(e.target.value)}
-        value={value}
-      />
-      <button className="btn btn-success" onClick={focus}>
-        Focus
+      <p className={"text-danger text-center"}>Test</p>
+      <button
+        className={"btn btn-success"}
+        onClick={() => setNumber((pre) => pre + 1)}
+      >
+        Add
       </button>
-    </div>
+      <button
+        className={"btn btn-danger"}
+        onClick={() => setNumber((pre) => pre - 1)}
+      >
+        subtract
+      </button>
+      <button
+        className={"btn btn-warning"}
+        onClick={() => setColored((pre) => !pre)}
+      >
+        Colored
+      </button>
+    </>
   );
 }
-
 export default App;
