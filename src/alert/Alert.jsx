@@ -4,8 +4,8 @@ function Alert() {
   const alert = useAlert();
   if (!alert.visible) return null;
   return (
-    <div className="alert alert-danger" onClick={alert.toggle}>
-      <p>This is a very, very important massager</p>
+    <div className="alert alert-danger" onClick={alert.hide}>
+      <p>{alert.text}</p>
     </div>
   );
 }
